@@ -47,6 +47,7 @@ services:
         define('WP_ENVIRONMENT_TYPE', 'local');
     volumes:
       - wordpress_data:/var/www/html
+      - ./wordpress/plugins/beautyglow-products:/var/www/html/wp-content/plugins/beautyglow-products:ro
     networks:
       - frontend
       - database
