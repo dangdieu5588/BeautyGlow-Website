@@ -1,0 +1,4 @@
+<?php defined('ABSPATH') || exit; get_header(); ?>
+<section class="page-intro container"><p class="eyebrow">TÌM KIẾM BEAUTYGLOW</p><h1>Kết quả cho “<?php echo esc_html(get_search_query()); ?>”</h1><p><?php global $wp_query; echo esc_html($wp_query->found_posts); ?> sản phẩm được tìm thấy</p></section>
+<section class="container catalog-section"><div class="product-grid"><?php while (have_posts()) { the_post(); get_template_part('template-parts/product-card'); } ?></div><?php if (!have_posts() && !$wp_query->found_posts) { ?><div class="empty-state"><h2>Chưa tìm thấy sản phẩm phù hợp</h2><p>Thử tên ngắn hơn, chẳng hạn “sen”, “Dior” hoặc “hoa hồng”.</p><a class="button" href="<?php echo esc_url(beautyglow_catalog_url()); ?>">Xem tất cả sản phẩm</a></div><?php } the_posts_pagination(); ?></section>
+<?php get_footer(); ?>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="700" viewBox="0 0 720 700" role="img" aria-labelledby="title desc">
+<title id="title">Hồ sen BeautyGlow</title><desc id="desc">Minh họa nguyên bản hoa sen hồng nở trên mặt hồ xanh vào buổi sáng.</desc>
+<defs>
+<linearGradient id="water" x2=".8" y2="1"><stop stop-color="#e5ede0"/><stop offset=".45" stop-color="#a5bca4"/><stop offset="1" stop-color="#325e51"/></linearGradient>
+<linearGradient id="petal" x2=".3" y2="1"><stop stop-color="#f9e3e9"/><stop offset=".45" stop-color="#eeb6cb"/><stop offset="1" stop-color="#ba668c"/></linearGradient>
+<linearGradient id="lightpetal" x2=".4" y2="1"><stop stop-color="#fff3f1"/><stop offset=".65" stop-color="#f4cfdb"/><stop offset="1" stop-color="#cd86a3"/></linearGradient>
+<radialGradient id="sun"><stop stop-color="#fff9e7" stop-opacity=".9"/><stop offset="1" stop-color="#fff9e7" stop-opacity="0"/></radialGradient>
+<linearGradient id="leaf"><stop stop-color="#87a27a"/><stop offset="1" stop-color="#395f4a"/></linearGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="10"/></filter>
+<g id="lotus">
+<path d="M0 35 Q-28-45 0-135 Q30-38 0 35" fill="url(#petal)"/>
+<path d="M0 35 Q-95 3-103-91 Q-15-83 0 35" fill="url(#petal)"/>
+<path d="M0 35 Q95 3 103-91 Q15-83 0 35" fill="url(#petal)"/>
+<path d="M0 36 Q-135 45-155-30 Q-77-65 0 36" fill="url(#lightpetal)"/>
+<path d="M0 36 Q135 45 155-30 Q77-65 0 36" fill="url(#lightpetal)"/>
+<path d="M0 37 Q-73-3-45-98 Q11-62 0 37" fill="url(#lightpetal)"/>
+<path d="M0 37 Q73-3 45-98 Q-11-62 0 37" fill="url(#lightpetal)"/>
+<ellipse cy="25" rx="28" ry="12" fill="#d8b45e"/>
+<path d="M0 44 Q-106 73-128 1 Q-57-6 0 44" fill="url(#petal)"/>
+<path d="M0 44 Q106 73 128 1 Q57-6 0 44" fill="url(#petal)"/>
+<path d="M0 48 Q-44 31-36-19 Q0-9 36-19 Q44 31 0 48" fill="url(#lightpetal)"/>
+</g></defs>
+<path fill="url(#water)" d="M0 0h720v700H0z"/>
+<circle cx="500" cy="110" r="260" fill="url(#sun)"/>
+<g fill="#f6f0d8" opacity=".55" filter="url(#blur)"><circle cx="95" cy="85" r="32"/><circle cx="600" cy="240" r="22"/><circle cx="420" cy="70" r="35"/></g>
+<g fill="none" stroke="#e2ead4" opacity=".28"><ellipse cx="370" cy="450" rx="300" ry="27"/><ellipse cx="370" cy="450" rx="250" ry="17"/><ellipse cx="125" cy="300" rx="160" ry="18"/><ellipse cx="580" cy="540" rx="190" ry="20"/><path d="M0 595q180-18 370 0t350 0M0 235q160-15 320 0t400 0M15 660q330-22 690 0"/></g>
+<g fill="url(#leaf)"><path d="M-35 451C15 332 190 328 235 399L110 434 235 429C186 504 23 525-35 451"/><path d="M476 477C492 383 664 371 749 431L595 461 745 459C666 540 512 541 476 477"/><path d="M56 649C70 544 250 518 330 589L187 623 326 615C260 698 101 718 56 649"/></g>
+<g stroke="#abc29a" fill="none" opacity=".5"><path d="M111 434-8 416m119 18-62-63m62 63 40-76m-40 76-38 63m38-63 74 38M595 461l-91-24m91 24 19-67m-19 67 82-53m-82 53 52 57M187 623l-90-36m90 36 25-79m-25 79 73 40"/></g>
+<path d="M374 470q-12-90-6-154M184 337q30-62 24-118" stroke="#537e56" stroke-width="7" fill="none"/>
+<ellipse cx="370" cy="476" rx="100" ry="14" fill="#234d43" opacity=".22"/>
+<use href="#lotus" transform="translate(370 355) scale(1.25)"/>
+<use href="#lotus" transform="translate(207 234) scale(.55)" opacity=".88"/>
+<path d="M576 344q-25-80-18-150" stroke="#598153" stroke-width="5" fill="none"/>
+<path d="M558 215q-32-31-5-90 35 43 5 90" fill="url(#petal)"/>
+<g fill="#f8efdc" opacity=".5"><circle cx="95" cy="235" r="2"/><circle cx="509" cy="318" r="2.5"/><circle cx="630" cy="119" r="3"/><circle cx="470" cy="568" r="2"/></g>
+</svg>
