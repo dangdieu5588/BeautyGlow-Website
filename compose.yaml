@@ -170,6 +170,53 @@ services:
       - no-new-privileges:true
     logging: *logging
 
+  grafana:
+    image: grafana/grafana:13.2.4
+    user: "472:0"
+    restart: unless-stopped
+    # Refuse accidental first boot while the approved secret is still empty.
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - test -s /run/secrets/grafana-admin-password || { echo "Grafana admin secret is not initialized" >&2; exit 1; }; exec /run.sh
+    environment:
+      GF_SECURITY_ADMIN_USER: beautyglow_grafana_admin
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana-admin-password
+      GF_SERVER_ROOT_URL: http://localhost:13000/
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
+    ports:
+      - "127.0.0.1:13000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./config/grafana/dashboards:/etc/grafana/dashboards:ro
+      - type: bind
+        source: /var/lib/beautyglow-secrets/grafana-admin-password
+        target: /run/secrets/grafana-admin-password
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      - monitoring
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    logging: *logging
+
   prometheus:
     image: prom/prometheus:v3.15.0
     restart: unless-stopped
@@ -259,3 +306,5 @@ volumes:
     name: beautyglow-website_wordpress_data
   prometheus_data:
     name: beautyglow-website_prometheus_data
+  grafana_data:
+    name: beautyglow-website_grafana_data
