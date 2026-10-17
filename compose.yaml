@@ -114,6 +114,132 @@ services:
       - no-new-privileges:true
     logging: *logging
 
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.5.3
+    restart: unless-stopped
+    command:
+      - --nginx.scrape-uri=http://nginx:8081/stub_status
+    networks:
+      - frontend
+      - monitoring
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter:v0.20.0
+    restart: unless-stopped
+    command:
+      - --config.my-cnf=/run/secrets/mysqld-exporter.cnf
+      - --mysqld.address=mysql:3306
+      - --no-collect.slave_status
+      - --no-collect.info_schema.innodb_cmp
+      - --no-collect.info_schema.innodb_cmpmem
+      - --no-collect.info_schema.query_response_time
+    volumes:
+      - type: bind
+        source: /var/lib/beautyglow-secrets/mysqld-exporter.cnf
+        target: /run/secrets/mysqld-exporter.cnf
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      - database
+      - monitoring
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.29.0
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/blackbox/blackbox.yml
+    volumes:
+      - ./config/exporters/blackbox.yml:/etc/blackbox/blackbox.yml:ro
+    networks:
+      - frontend
+      - monitoring
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
+  prometheus:
+    image: prom/prometheus:v3.15.0
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+      - --storage.tsdb.retention.size=2GB
+    ports:
+      - "127.0.0.1:19090:9090"
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - monitoring
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
+  node-exporter:
+    image: prom/node-exporter:v1.12.1
+    restart: unless-stopped
+    pid: host
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      # Host CPU/RAM only: do not report the bridge container's network as host.
+      - --collector.disable-defaults
+      - --collector.cpu
+      - --collector.meminfo
+      - --collector.loadavg
+      - --collector.stat
+      - --collector.time
+      - --collector.uname
+      - --collector.vmstat
+      - --collector.pressure
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    networks:
+      - monitoring
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.60.6
+    restart: unless-stopped
+    # Raw cgroup CPU/RAM collection; no Docker socket, host root or privileged.
+    cgroup: host
+    command:
+      - --docker_only=false
+      - --enable_metrics=cpu,memory
+      - --housekeeping_interval=15s
+      - --store_container_labels=false
+    volumes:
+      - /sys:/sys:ro
+    networks:
+      - monitoring
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
 networks:
   frontend:
     name: beautyglow-website_frontend
@@ -122,9 +248,14 @@ networks:
     name: beautyglow-website_database
     driver: bridge
     internal: true
+  monitoring:
+    name: beautyglow-website_monitoring
+    driver: bridge
 
 volumes:
   mysql_data:
     name: beautyglow-website_mysql_data
   wordpress_data:
     name: beautyglow-website_wordpress_data
+  prometheus_data:
+    name: beautyglow-website_prometheus_data

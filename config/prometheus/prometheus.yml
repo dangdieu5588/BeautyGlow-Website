@@ -1,0 +1,77 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    project: beautyglow-website
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['prometheus:9090']
+        labels:
+          project: beautyglow-website
+
+  - job_name: node-exporter
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          project: beautyglow-website
+          host: ubuntu-wsl
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          project: beautyglow-website
+    # No Docker API access: raw cgroup IDs are available instead of Docker labels.
+    # Keep only the four existing BeautyGlow application container IDs.
+    # Refresh this allowlist if those containers are recreated; Lab metrics are dropped.
+    metric_relabel_configs:
+      - source_labels: [__name__, id]
+        regex: 'container_.*;(/system.slice/docker-(418d3fc11bdfd26acbba1d2510dd9794af70b7c784d0bd93385a5391e3ea1bf4|5ba9edee1cd19cfdda44b3bf0c9da600aad17f3c2e0e07ae78c8cf729863d95a|217f83e3bd6b56279449e23437e134a53899eaa806e65e77c763b571f11e5ae4|8452c5de49287fb82b89740b178a1205e3d2b3e686730e127af21a8cc4f4a8c4)\.scope|/docker/(418d3fc11bdfd26acbba1d2510dd9794af70b7c784d0bd93385a5391e3ea1bf4|5ba9edee1cd19cfdda44b3bf0c9da600aad17f3c2e0e07ae78c8cf729863d95a|217f83e3bd6b56279449e23437e134a53899eaa806e65e77c763b571f11e5ae4|8452c5de49287fb82b89740b178a1205e3d2b3e686730e127af21a8cc4f4a8c4))'
+        action: keep
+      - source_labels: [id]
+        regex: '.*418d3fc11bdfd26acbba1d2510dd9794af70b7c784d0bd93385a5391e3ea1bf4.*'
+        target_label: service
+        replacement: wordpress
+      - source_labels: [id]
+        regex: '.*5ba9edee1cd19cfdda44b3bf0c9da600aad17f3c2e0e07ae78c8cf729863d95a.*'
+        target_label: service
+        replacement: mysql
+      - source_labels: [id]
+        regex: '.*217f83e3bd6b56279449e23437e134a53899eaa806e65e77c763b571f11e5ae4.*'
+        target_label: service
+        replacement: nginx
+      - source_labels: [id]
+        regex: '.*8452c5de49287fb82b89740b178a1205e3d2b3e686730e127af21a8cc4f4a8c4.*'
+        target_label: service
+        replacement: phpmyadmin
+
+  - job_name: nginx-exporter
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+        labels:
+          project: beautyglow-website
+
+  - job_name: mysqld-exporter
+    static_configs:
+      - targets: ['mysqld-exporter:9104']
+        labels:
+          project: beautyglow-website
+
+  - job_name: blackbox-wordpress
+    metrics_path: /probe
+    params:
+      module: [beautyglow_http]
+    static_configs:
+      - targets: ['http://nginx:80/']
+        labels:
+          project: beautyglow-website
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115

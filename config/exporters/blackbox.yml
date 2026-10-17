@@ -1,0 +1,13 @@
+modules:
+  beautyglow_http:
+    prober: http
+    timeout: 5s
+    http:
+      method: GET
+      preferred_ip_protocol: ip4
+      valid_status_codes: [200]
+      follow_redirects: false
+      headers:
+        Host: localhost:18080
+      fail_if_body_not_matches_regexp:
+        - BeautyGlow
