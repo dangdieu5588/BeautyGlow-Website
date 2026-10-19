@@ -1,0 +1,62 @@
+// Candidate only. All mounts, UID/GID and image validation await approval.
+// No Docker socket, Docker discovery, credentials or host API endpoint.
+loki.source.file "beautyglow_spool" {
+  targets = [
+    {__path__ = "/var/log/beautyglow/nginx/*.jsonl", project = "beautyglow-website", service = "nginx"},
+    {__path__ = "/var/log/beautyglow/wordpress/*.jsonl", project = "beautyglow-website", service = "wordpress"},
+    {__path__ = "/var/log/beautyglow/mysql/*.jsonl", project = "beautyglow-website", service = "mysql"},
+  ]
+  file_match {
+    enabled = true
+  }
+  forward_to = [loki.process.beautyglow.receiver]
+}
+
+loki.process "beautyglow" {
+  stage.json {
+    expressions = {
+      timestamp = "timestamp",
+      project = "project",
+      service = "service",
+      stream = "stream",
+      message = "message",
+    }
+    drop_malformed = true
+  }
+  stage.labels {
+    values = {project = "project", service = "service", stream = "stream"}
+  }
+  stage.match {
+    selector = "{project!=\"beautyglow-website\"}"
+    action = "drop"
+    drop_counter_reason = "wrong_project"
+  }
+  stage.match {
+    selector = "{service!~\"nginx|wordpress|mysql\"}"
+    action = "drop"
+    drop_counter_reason = "wrong_service"
+  }
+  stage.match {
+    selector = "{stream!~\"stdout|stderr\"}"
+    action = "drop"
+    drop_counter_reason = "wrong_stream"
+  }
+  stage.timestamp {
+    source = "timestamp"
+    format = "RFC3339Nano"
+    action_on_failure = "skip"
+  }
+  stage.output {
+    source = "message"
+  }
+  stage.label_drop {
+    values = ["filename"]
+  }
+  forward_to = [loki.write.beautyglow.receiver]
+}
+
+loki.write "beautyglow" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

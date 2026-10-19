@@ -287,6 +287,84 @@ services:
       - no-new-privileges:true
     logging: *logging
 
+  loki:
+    # Loki 3.7.0, verified linux/amd64 manifest.
+    image: grafana/loki@sha256:ac6ad1d73bd4c3c38edc93f91ebc217672fa657c20a5dc7b4b0e25baeec7bebb
+    platform: linux/amd64
+    user: "10001:10001"
+    restart: unless-stopped
+    command:
+      - -config.file=/etc/loki/loki.yml
+      - -ingester.wal-dir=/loki/wal
+    volumes:
+      - type: bind
+        source: ./config/loki/loki.yml
+        target: /etc/loki/loki.yml
+        read_only: true
+        bind:
+          create_host_path: false
+      - loki_data:/loki
+    networks:
+      - monitoring
+    read_only: true
+    mem_limit: 512m
+    cpus: "0.50"
+    pids_limit: 128
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
+  alloy:
+    # Alloy v1.20.1, verified linux/amd64 manifest.
+    image: grafana/alloy@sha256:5133c159d34c7acf37a1b6d91682abcb6b28b2a29bae152ff5cf4753296f956c
+    platform: linux/amd64
+    user: "473:473"
+    group_add: ["475"]
+    restart: unless-stopped
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - --disable-reporting
+      - /etc/alloy/config.alloy
+    volumes:
+      - type: bind
+        source: ./config/alloy/config.alloy
+        target: /etc/alloy/config.alloy
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /var/lib/beautyglow-logs/nginx
+        target: /var/log/beautyglow/nginx
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /var/lib/beautyglow-logs/wordpress
+        target: /var/log/beautyglow/wordpress
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /var/lib/beautyglow-logs/mysql
+        target: /var/log/beautyglow/mysql
+        read_only: true
+        bind:
+          create_host_path: false
+      - alloy_data:/var/lib/alloy/data
+    networks:
+      - monitoring
+    read_only: true
+    mem_limit: 256m
+    cpus: "0.50"
+    pids_limit: 128
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
 networks:
   frontend:
     name: beautyglow-website_frontend
@@ -308,3 +386,9 @@ volumes:
     name: beautyglow-website_prometheus_data
   grafana_data:
     name: beautyglow-website_grafana_data
+  loki_data:
+    name: beautyglow-logging-loki-data
+    external: true
+  alloy_data:
+    name: beautyglow-logging-alloy-data
+    external: true

@@ -1,0 +1,1137 @@
+{
+  "id": null,
+  "uid": "beautyglow-logs-security",
+  "title": "BeautyGlow - Logs & Security",
+  "description": "Đối chiếu log vận hành nginx/WordPress/MySQL; HTTP status từ access log, lỗi/cảnh báo theo từ khóa. Không phải hệ thống phát hiện tấn công.",
+  "tags": [
+    "beautyglow",
+    "loki",
+    "logging",
+    "security"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 2,
+  "editable": false,
+  "refresh": "",
+  "time": {
+    "from": "2026-10-19T10:13:34Z",
+    "to": "2026-10-19T18:16:40Z"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "30s",
+      "1m",
+      "5m"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "label": "Service",
+        "type": "query",
+        "datasource": {
+          "type": "loki",
+          "uid": "beautyglow-loki"
+        },
+        "query": "label_values({project=\"beautyglow-website\"}, service)",
+        "definition": "label_values({project=\"beautyglow-website\"}, service)",
+        "refresh": 2,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".+",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": [],
+        "hide": 0,
+        "skipUrlSync": false
+      },
+      {
+        "name": "stream",
+        "label": "Stream",
+        "type": "query",
+        "datasource": {
+          "type": "loki",
+          "uid": "beautyglow-loki"
+        },
+        "query": "label_values({project=\"beautyglow-website\",service=~\"${service:regex}\"}, stream)",
+        "definition": "label_values({project=\"beautyglow-website\",service=~\"${service:regex}\"}, stream)",
+        "refresh": 2,
+        "sort": 1,
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".+",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": [],
+        "hide": 0,
+        "skipUrlSync": false
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Phạm vi & cách đọc",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 3
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**BeautyGlow — Logs & Security** · Chọn service/stream ở phía trên. Mặc định mở khoảng dữ liệu đã nghiệm thu **19/10/2026 10:13:34–18:16:40 UTC**, tổng 3.977 dòng khi chọn All.\n\nHTTP status chỉ trích từ nginx stdout khớp combined access log (1.072/1.088 dòng trong mẫu). Error/Warning là **từ khóa trong nội dung**, có thể có false positive/negative; stderr không đồng nghĩa lỗi. Đây là dấu hiệu vận hành, chưa phải kết luận tấn công. Bridge không chạy nền: khoảng thời gian mới có thể không có dữ liệu. Bảng/log chi tiết giới hạn **500 dòng**, các phép đếm không bị giới hạn này."
+      },
+      "targets": []
+    },
+    {
+      "id": 2,
+      "title": "Tổng log — khoảng đã chọn",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 3,
+        "w": 8,
+        "h": 4
+      },
+      "description": "",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum (count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"}[$__range])) or vector(0)",
+          "legendFormat": "Tổng",
+          "queryType": "instant",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": true,
+          "range": false,
+          "maxLines": 500
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Error keywords — khoảng đã chọn",
+      "type": "stat",
+      "gridPos": {
+        "x": 8,
+        "y": 3,
+        "w": 8,
+        "h": 4
+      },
+      "description": "Nhận diện từ khóa, không phải severity label; không khẳng định sự cố bảo mật.",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum (count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"} |~ `(?i)\\b(error|fatal|critical|crit|alert|emerg|panic)\\b`[$__range])) or vector(0)",
+          "legendFormat": "Error keywords",
+          "queryType": "instant",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": true,
+          "range": false,
+          "maxLines": 500
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Warning keywords — khoảng đã chọn",
+      "type": "stat",
+      "gridPos": {
+        "x": 16,
+        "y": 3,
+        "w": 8,
+        "h": 4
+      },
+      "description": "",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum (count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"} |~ `(?i)\\b(warn|warning)\\b`[$__range])) or vector(0)",
+          "legendFormat": "Warning keywords",
+          "queryType": "instant",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": true,
+          "range": false,
+          "maxLines": 500
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Tổng log theo thời gian",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 12,
+        "h": 7
+      },
+      "description": "Số dòng mỗi cửa sổ tự động, tối thiểu 1 phút; không phải tổng lũy kế.",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "spanNulls": false,
+            "insertNulls": false,
+            "showPoints": "always",
+            "pointSize": 4,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "axisCenteredZero": false,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc",
+          "hideZeros": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum (count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"}[$__interval])) or vector(0)",
+          "legendFormat": "Log / cửa sổ",
+          "queryType": "range",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": false,
+          "range": true,
+          "maxLines": 500
+        }
+      ],
+      "interval": "1m",
+      "maxDataPoints": 600,
+      "transformations": []
+    },
+    {
+      "id": 6,
+      "title": "Log theo service",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 12,
+        "y": 7,
+        "w": 12,
+        "h": 7
+      },
+      "description": "",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "spanNulls": false,
+            "insertNulls": false,
+            "showPoints": "always",
+            "pointSize": 4,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "axisCenteredZero": false,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc",
+          "hideZeros": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (service) (count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"}[$__interval]))",
+          "legendFormat": "{{service}}",
+          "queryType": "range",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": false,
+          "range": true,
+          "maxLines": 500
+        }
+      ],
+      "interval": "1m",
+      "maxDataPoints": 600,
+      "transformations": []
+    },
+    {
+      "id": 7,
+      "title": "Phân bố stdout / stderr",
+      "type": "piechart",
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 8,
+        "h": 7
+      },
+      "description": "",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "stdout"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "stderr"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ],
+          "showLegend": true
+        },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "sort": "desc"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\",stream=\"stdout\"}[$__range])) or vector(0)",
+          "legendFormat": "stdout",
+          "queryType": "instant",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": true,
+          "range": false,
+          "maxLines": 500
+        },
+        {
+          "refId": "B",
+          "expr": "sum(count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\",stream=\"stderr\"}[$__range])) or vector(0)",
+          "legendFormat": "stderr",
+          "queryType": "instant",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": true,
+          "range": false,
+          "maxLines": 500
+        }
+      ],
+      "transformations": []
+    },
+    {
+      "id": 8,
+      "title": "Tổng theo service / stream",
+      "type": "table",
+      "gridPos": {
+        "x": 8,
+        "y": 14,
+        "w": 16,
+        "h": 7
+      },
+      "description": "",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (service,stream) (count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"}[$__range]))",
+          "legendFormat": "{{service}} / {{stream}}",
+          "queryType": "instant",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": true,
+          "range": false,
+          "maxLines": 500
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Value": "Số dòng"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "nginx HTTP 4xx / 5xx theo thời gian",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 12,
+        "h": 7
+      },
+      "description": "Chỉ nginx stdout có request/status khớp parser. 0 trong khoảng không chứng minh không có tấn công. Bộ lọc service/stream vẫn áp dụng.",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "spanNulls": false,
+            "insertNulls": false,
+            "showPoints": "always",
+            "pointSize": 4,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "axisCenteredZero": false,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc",
+          "hideZeros": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum (count_over_time({project=\"beautyglow-website\",service=\"nginx\",service=~\"${service:regex}\",stream=\"stdout\",stream=~\"${stream:regex}\"} | regexp `^\\S+ \\S+ \\S+ \\[[^\\]]+\\] \"[^\"]*\" (?P<http_status>[1-5][0-9]{2}) (?:[0-9]+|-)` | http_status!=\"\" | __error__=\"\" | http_status=~\"4..\"[$__interval])) or vector(0)",
+          "legendFormat": "4xx",
+          "queryType": "range",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": false,
+          "range": true,
+          "maxLines": 500
+        },
+        {
+          "refId": "B",
+          "expr": "sum (count_over_time({project=\"beautyglow-website\",service=\"nginx\",service=~\"${service:regex}\",stream=\"stdout\",stream=~\"${stream:regex}\"} | regexp `^\\S+ \\S+ \\S+ \\[[^\\]]+\\] \"[^\"]*\" (?P<http_status>[1-5][0-9]{2}) (?:[0-9]+|-)` | http_status!=\"\" | __error__=\"\" | http_status=~\"5..\"[$__interval])) or vector(0)",
+          "legendFormat": "5xx",
+          "queryType": "range",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": false,
+          "range": true,
+          "maxLines": 500
+        }
+      ],
+      "interval": "1m",
+      "maxDataPoints": 600,
+      "transformations": []
+    },
+    {
+      "id": 10,
+      "title": "nginx HTTP status — khoảng đã chọn",
+      "type": "table",
+      "gridPos": {
+        "x": 12,
+        "y": 21,
+        "w": 12,
+        "h": 7
+      },
+      "description": "",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (http_status) (count_over_time({project=\"beautyglow-website\",service=\"nginx\",service=~\"${service:regex}\",stream=\"stdout\",stream=~\"${stream:regex}\"} | regexp `^\\S+ \\S+ \\S+ \\[[^\\]]+\\] \"[^\"]*\" (?P<http_status>[1-5][0-9]{2}) (?:[0-9]+|-)` | http_status!=\"\" | __error__=\"\"[$__range]))",
+          "legendFormat": "{{http_status}}",
+          "queryType": "instant",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": true,
+          "range": false,
+          "maxLines": 500
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Value": "Số request"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Error keywords theo service",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 28,
+        "w": 12,
+        "h": 7
+      },
+      "description": "",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "spanNulls": false,
+            "insertNulls": false,
+            "showPoints": "always",
+            "pointSize": 4,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "axisCenteredZero": false,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc",
+          "hideZeros": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (service) (count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"} |~ `(?i)\\b(error|fatal|critical|crit|alert|emerg|panic)\\b`[$__interval]))",
+          "legendFormat": "{{service}}",
+          "queryType": "range",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": false,
+          "range": true,
+          "maxLines": 500
+        }
+      ],
+      "interval": "1m",
+      "maxDataPoints": 600,
+      "transformations": []
+    },
+    {
+      "id": 12,
+      "title": "Warning keywords theo service",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 12,
+        "y": 28,
+        "w": 12,
+        "h": 7
+      },
+      "description": "",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "spanNulls": false,
+            "insertNulls": false,
+            "showPoints": "always",
+            "pointSize": 4,
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto",
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "axisBorderShow": false,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "axisCenteredZero": false,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc",
+          "hideZeros": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (service) (count_over_time({project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"} |~ `(?i)\\b(warn|warning)\\b`[$__interval]))",
+          "legendFormat": "{{service}}",
+          "queryType": "range",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": false,
+          "range": true,
+          "maxLines": 500
+        }
+      ],
+      "interval": "1m",
+      "maxDataPoints": 600,
+      "transformations": []
+    },
+    {
+      "id": 13,
+      "title": "Bảng log chi tiết — tối đa 500 dòng",
+      "type": "table",
+      "gridPos": {
+        "x": 0,
+        "y": 35,
+        "w": 24,
+        "h": 10
+      },
+      "description": "Lọc bằng service/stream; mở Explore để phân tích thêm. Nội dung đã qua redaction của Bridge, vẫn cần cân nhắc trước khi chia sẻ.",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"}",
+          "legendFormat": "",
+          "queryType": "range",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": false,
+          "range": true,
+          "maxLines": 500
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "id": true,
+              "tsNs": true
+            },
+            "renameByName": {
+              "Time": "Thời gian",
+              "Line": "Nội dung",
+              "labels": "Nhãn"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Log explorer — mở rộng dòng xem nhãn",
+      "type": "logs",
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 24,
+        "h": 10
+      },
+      "description": "",
+      "datasource": {
+        "type": "loki",
+        "uid": "beautyglow-loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "sortOrder": "Descending"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{project=\"beautyglow-website\",service=~\"${service:regex}\",stream=~\"${stream:regex}\"}",
+          "legendFormat": "",
+          "queryType": "range",
+          "editorMode": "code",
+          "datasource": {
+            "type": "loki",
+            "uid": "beautyglow-loki"
+          },
+          "instant": false,
+          "range": true,
+          "maxLines": 500
+        }
+      ]
+    }
+  ],
+  "links": []
+}

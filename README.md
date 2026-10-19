@@ -6,7 +6,18 @@ hiệu, phục vụ mục đích học tập; không đại diện chính thức
 
 Tên hiển thị: **BeautyGlow – Mỹ phẩm & Chăm sóc sắc đẹp**.
 
-## Trạng thái hiện tại
+## Trạng thái hiện hành — Giai đoạn 5
+
+Logging Docker → Bridge → JSONL → Alloy → Loki → Grafana đã nghiệm thu
+3.977/3.977 dòng; dashboard Logs & Security 14 panel và Prometheus 18 panel.
+Bridge chạy theo đợt có giám sát, chưa bật thu thập thường trực.
+Xem [runbook vận hành](docs/LOGGING-OPERATIONS.md) và
+[kết quả nghiệm thu / phạm vi Git](docs/PHASE5-ACCEPTANCE.md).
+
+Các mục triển khai bên dưới là hồ sơ nền tảng giai đoạn đầu, gồm một số mô tả
+chưa triển khai theme/monitoring đã lỗi thời; dùng runbook cho vận hành Giai đoạn 5.
+
+## Trạng thái nền tảng ban đầu (lịch sử)
 
 - Đã triển khai bốn dịch vụ WordPress, MySQL, phpMyAdmin và Nginx bằng Docker Compose.
 - WordPress đã cài đặt bằng tiếng Việt, đang dùng Twenty Twenty-Five.

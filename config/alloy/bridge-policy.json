@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "project": "beautyglow-website",
+  "services": ["nginx", "wordpress", "mysql"],
+  "max_input_bytes": 65536,
+  "max_line_bytes": 8192,
+  "max_segment_bytes": 262144,
+  "max_spool_bytes": 16777216,
+  "max_state_bytes": 1048576,
+  "max_checkpoint_containers": 64,
+  "max_window_keys": 4096,
+  "replay_window_seconds": 120,
+  "max_future_skew_seconds": 300,
+  "retry_attempts": 3,
+  "retry_base_seconds": 0.25,
+  "retry_max_seconds": 2.0
+}
