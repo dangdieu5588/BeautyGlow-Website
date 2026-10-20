@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "target": ".env",
+  "inheritance_disabled": true,
+  "ace_count": 3,
+  "operator_read_write": true,
+  "system_full_control": true,
+  "administrators_full_control": true,
+  "broad_users_grant_removed": true,
+  "content_read": false,
+  "backup": "backups/phase6-env-acl-20261021T040315.json (gitignored)",
+  "scope": "Only .env; no parent or other file ACL changed",
+  "approval": "Explicit user approval in conversation"
+}

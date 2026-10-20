@@ -1,0 +1,38 @@
+# Isolated restore drill only. Never use production volumes or networks here.
+name: beautyglow-restore-test
+services:
+  mysql:
+    image: ${BEAUTYGLOW_RESTORE_IMAGE:?Use the existing production MySQL image ID}
+    pull_policy: never
+    restart: "no"
+    environment:
+      MYSQL_DATABASE: beautyglow_catalog
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql-root-password
+    command: ["--skip-log-bin", "--general-log=OFF", "--slow-query-log=OFF"]
+    secrets:
+      - source: mysql-root-password
+        target: mysql-root-password
+      - source: mysql-readonly-password
+        target: mysql-readonly-password
+    volumes:
+      - restore_mysql_data:/var/lib/mysql
+    networks: [isolated]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 768m
+    cpus: "1.0"
+    pids_limit: 128
+    logging:
+      driver: json-file
+      options: {max-size: "5m", max-file: "2"}
+networks:
+  isolated:
+    name: beautyglow-restore-test_isolated
+    internal: true
+volumes:
+  restore_mysql_data:
+    name: beautyglow-restore-test_mysql_data
+secrets:
+  mysql-root-password:
+    file: ${BEAUTYGLOW_RESTORE_SECRETS_DIR:?Protected drill directory}/mysql-root-password
+  mysql-readonly-password:
+    file: ${BEAUTYGLOW_RESTORE_SECRETS_DIR:?Protected drill directory}/mysql-readonly-password

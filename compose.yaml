@@ -156,6 +156,8 @@ services:
 
   blackbox-exporter:
     image: prom/blackbox-exporter:v0.29.0
+    # HTTP-only probes and port 9115 need no root or raw-socket capability.
+    user: "65534:65534"
     restart: unless-stopped
     command:
       - --config.file=/etc/blackbox/blackbox.yml

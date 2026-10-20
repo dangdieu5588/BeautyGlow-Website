@@ -1,0 +1,260 @@
+{
+  "checked_at_utc": "2026-10-20T21:19:01.434134+00:00",
+  "overall_status": "PASS",
+  "technical_checks": "PASS",
+  "production_containers": {
+    "blackbox-exporter": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 65534,
+      "restart_count": 0,
+      "read_only_rootfs": true,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "alertmanager": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 65534,
+      "restart_count": 0,
+      "read_only_rootfs": true,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "prometheus": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 65534,
+      "restart_count": 0,
+      "read_only_rootfs": false,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "alloy": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 473,
+      "restart_count": 0,
+      "read_only_rootfs": true,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "loki": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 10001,
+      "restart_count": 0,
+      "read_only_rootfs": true,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "grafana": {
+      "state": "running",
+      "health": "healthy",
+      "pid1_uid": 472,
+      "restart_count": 0,
+      "read_only_rootfs": true,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "mysqld-exporter": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 65534,
+      "restart_count": 0,
+      "read_only_rootfs": true,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "nginx-exporter": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 1001,
+      "restart_count": 0,
+      "read_only_rootfs": true,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "cadvisor": {
+      "state": "running",
+      "health": "healthy",
+      "pid1_uid": 0,
+      "restart_count": 0,
+      "read_only_rootfs": true,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "node-exporter": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 65534,
+      "restart_count": 0,
+      "read_only_rootfs": true,
+      "drop_all_caps": true,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "wordpress": {
+      "state": "running",
+      "health": "healthy",
+      "pid1_uid": 0,
+      "restart_count": 0,
+      "read_only_rootfs": false,
+      "drop_all_caps": false,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "phpmyadmin": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 0,
+      "restart_count": 0,
+      "read_only_rootfs": false,
+      "drop_all_caps": false,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "nginx": {
+      "state": "running",
+      "health": "not-configured",
+      "pid1_uid": 0,
+      "restart_count": 0,
+      "read_only_rootfs": false,
+      "drop_all_caps": false,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    },
+    "mysql": {
+      "state": "running",
+      "health": "healthy",
+      "pid1_uid": 999,
+      "restart_count": 0,
+      "read_only_rootfs": false,
+      "drop_all_caps": false,
+      "no_new_privileges": true,
+      "host_ports_loopback_only": true
+    }
+  },
+  "production_changes": [
+    "approved Windows .env ACL",
+    "Blackbox HTTP exporter non-root UID/GID65534"
+  ],
+  "database_network_internal": true,
+  "http_checks": {
+    "/": {
+      "http_status": 200,
+      "security_headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+      },
+      "server_version_hidden": true
+    },
+    "/wp-login.php": {
+      "http_status": 200,
+      "security_headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+      },
+      "server_version_hidden": true
+    },
+    "/phase6-not-found-check": {
+      "http_status": 404,
+      "security_headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+      },
+      "server_version_hidden": true
+    }
+  },
+  "prometheus_targets_up": 6,
+  "official_alert_rules_healthy": 4,
+  "secret_metadata": {
+    "beautyglow-secrets": {
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o700",
+      "content_not_read": true
+    },
+    "alertmanager-gmail.yml": {
+      "uid": 0,
+      "gid": 65534,
+      "mode": "0o440",
+      "content_not_read": true
+    },
+    "grafana-admin-password": {
+      "uid": 472,
+      "gid": 0,
+      "mode": "0o400",
+      "content_not_read": true
+    },
+    "mysqld-exporter.cnf": {
+      "uid": 65534,
+      "gid": 65534,
+      "mode": "0o400",
+      "content_not_read": true
+    }
+  },
+  "backup_restore": {
+    "status": "PASS",
+    "backup_directory": "/var/lib/beautyglow-backups/20261020T210409Z",
+    "restore_directory": "/var/lib/beautyglow-restore-tests/20261020T210409Z",
+    "database_tables": 12,
+    "database_rows": 412,
+    "database_bytes": 1512191,
+    "database_sha256": "d28ebcc89154b1a13caa80a025bbbf67e3844ddb74e0087cced44817b737b202",
+    "uploads_files": 64,
+    "uploads_bytes": 2549215,
+    "uploads_archive_bytes": 2548230,
+    "uploads_sha256": "9bf4c951e5637dde65669972c5d80f6c7c05a9e6f52c0dd0ef938fbaa31a5b40",
+    "restored_sql_raw_identical": false,
+    "restored_sql_semantically_identical": true,
+    "restored_uploads_identical": true,
+    "attachment_files_verified": 14,
+    "preexisting_missing_attachment_files": 0,
+    "readonly_select_count": 44,
+    "readonly_create_denied_mysql_error": 1142,
+    "readonly_account_scope": "isolated restore only",
+    "production_accounts_changed": false,
+    "production_data_written": false,
+    "restore_container": "5f0c488e78e1ab929bef99a4390a2ce05d320ec58bf57ce457a35eca11e3051e",
+    "restore_volume_preserved": true
+  },
+  "test_mysql_stopped": true,
+  "read_only_evidence": {
+    "scope": "isolated MySQL only",
+    "grant": "SELECT on beautyglow_catalog.*",
+    "select_posts_count": 44,
+    "create_table_denied_error": 1142,
+    "production_accounts_changed": false
+  },
+  "limitations": [
+    "Earlier missing-media report was a verifier charset error; utf8mb4 confirms all 14 originals",
+    "Local HTTP only; HTTPS/HSTS outside this bounded hardening step",
+    "Backup/drill data retained on the same host; no offsite or disaster-recovery claim",
+    "Windows workspace config ACL remains broader than protected Ubuntu runtime files"
+  ],
+  "offline_safety_tests_passed": 12,
+  "unicode_correction": {
+    "mysql_client_charset": "utf8mb4",
+    "false_missing_attachment_id": 32,
+    "all_originals_present": 14,
+    "source_backup_restore_hash_match": true,
+    "original_url_http_status": 200,
+    "production_media_modified": false
+  }
+}
