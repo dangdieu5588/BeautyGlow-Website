@@ -229,9 +229,44 @@ services:
       - "127.0.0.1:19090:9090"
     volumes:
       - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - type: bind
+        source: ./config/prometheus/rules
+        target: /etc/prometheus/rules
+        read_only: true
+        bind:
+          create_host_path: false
       - prometheus_data:/prometheus
     networks:
       - monitoring
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    logging: *logging
+
+  alertmanager:
+    # Runtime SMTP credentials stay in a protected Ubuntu file, outside Git.
+    image: prom/alertmanager:v0.34.1
+    user: "65534:65534"
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+      # Single instance; disable the unnecessary gossip listener.
+      - --cluster.listen-address=
+    volumes:
+      - type: bind
+        source: /var/lib/beautyglow-secrets/alertmanager-gmail.yml
+        target: /etc/alertmanager/alertmanager.yml
+        read_only: true
+        bind:
+          create_host_path: false
+      - alertmanager_data:/alertmanager
+    networks:
+      - monitoring
+    read_only: true
+    mem_limit: 128m
+    cpus: "0.25"
+    pids_limit: 64
     cap_drop: [ALL]
     security_opt:
       - no-new-privileges:true
@@ -386,6 +421,8 @@ volumes:
     name: beautyglow-website_prometheus_data
   grafana_data:
     name: beautyglow-website_grafana_data
+  alertmanager_data:
+    name: beautyglow-website_alertmanager_data
   loki_data:
     name: beautyglow-logging-loki-data
     external: true

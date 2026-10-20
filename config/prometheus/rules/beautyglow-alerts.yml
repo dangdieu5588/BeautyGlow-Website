@@ -1,0 +1,44 @@
+groups:
+  - name: beautyglow-availability
+    interval: 15s
+    rules:
+      - alert: BeautyGlowTargetDown
+        expr: up{project="beautyglow-website"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'BeautyGlow scrape target unavailable'
+          description: 'Prometheus cannot scrape {{ $labels.job }} at {{ $labels.instance }} for 2 minutes; inspect the target before restarting anything.'
+
+      # Gate on exporter scrape success: exporter failure is TargetDown,
+      # while an exporter reporting backend failure is the specific alert.
+      - alert: BeautyGlowMySQLDown
+        expr: (mysql_up{project="beautyglow-website",job="mysqld-exporter"} == 0) and on (project,job,instance) (up{project="beautyglow-website",job="mysqld-exporter"} == 1)
+        for: 1m
+        labels:
+          severity: critical
+          service: mysql
+        annotations:
+          summary: 'BeautyGlow MySQL check failed'
+          description: 'The reachable MySQL exporter reports mysql_up=0 for 1 minute; this can indicate connectivity or authentication failure, not necessarily a stopped database.'
+
+      - alert: BeautyGlowNginxDown
+        expr: (nginx_up{project="beautyglow-website",job="nginx-exporter"} == 0) and on (project,job,instance) (up{project="beautyglow-website",job="nginx-exporter"} == 1)
+        for: 1m
+        labels:
+          severity: critical
+          service: nginx
+        annotations:
+          summary: 'BeautyGlow Nginx check failed'
+          description: 'The reachable Nginx exporter reports nginx_up=0 for 1 minute; check Nginx and its stub_status endpoint.'
+
+      - alert: BeautyGlowHTTPProbeFailed
+        expr: (probe_success{project="beautyglow-website",job="blackbox-wordpress"} == 0) and on (project,job,instance) (up{project="beautyglow-website",job="blackbox-wordpress"} == 1)
+        for: 2m
+        labels:
+          severity: critical
+          service: wordpress
+        annotations:
+          summary: 'BeautyGlow internal HTTP probe failed'
+          description: 'The internal Nginx-to-WordPress HTTP probe has failed for 2 minutes; this does not test the Windows host port or Internet access.'

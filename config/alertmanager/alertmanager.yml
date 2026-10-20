@@ -1,0 +1,16 @@
+# Safe no-delivery fallback only; this file is not mounted in the Gmail deployment.
+# Live configuration is /var/lib/beautyglow-secrets/alertmanager-gmail.yml on Ubuntu.
+# Never copy the live file or its credentials into this repository.
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: notifications-not-configured
+  group_by: [project, alertname, job]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+receivers:
+  # Accepts/routes alerts internally but sends NO external notification.
+  - name: notifications-not-configured

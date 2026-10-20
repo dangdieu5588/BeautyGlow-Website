@@ -1,5 +1,56 @@
 # BeautyGlow — nghiệm thu cuối Giai đoạn 5
 
+## Nghiệm thu bổ sung Alerting — 21/10/2026 (UTC+7)
+
+Giai đoạn 5 **PASS trong phạm vi bài thực hành: logging tập trung theo đợt,
+dashboard và cảnh báo Gmail có thông báo phục hồi thực nhận**. Logging đã được
+push trong commit `9906158`; không triển khai hoặc kiểm thử lại phần đã PASS.
+Hồ sơ Logging và kế hoạch Git cũ bên dưới là lịch sử, không phải trạng thái Git
+hay hướng dẫn triển khai hiện tại.
+
+| Hạng mục Alerting | Kết quả / bằng chứng |
+|---|---|
+| Alertmanager | PASS: service riêng, UID/GID 65534:65534, chỉ mạng monitoring, không publish host port, gossip tắt. |
+| Prometheus | PASS: kết nối `alertmanager:9093`; nạp đúng 4 rules, health=ok; 6/6 targets UP. |
+| Gmail SMTP | PASS: `smtp.gmail.com:587`, STARTTLS bắt buộc; receiver gửi cả firing/resolved; gom nhóm 30s/5m, repeat 4h. |
+| Credential | PASS: file ngoài repository `/var/lib/beautyglow-secrets/alertmanager-gmail.yml`, root:65534 0440; parent root:root 0700; mount read-only. App Password nhập ẩn trong terminal, không đưa vào Git/output. |
+| Pending → Firing | PASS: rule thử riêng `BeautyGlowEmailDeliveryTest`, for=1m; quan sát cả hai trạng thái trên API Prometheus. |
+| FIRING thực nhận | PASS: người vận hành xác nhận email Gmail lúc **03:43 ngày 21/10/2026 UTC+7**. |
+| RESOLVED thực nhận | PASS: người vận hành xác nhận email Gmail cùng alert lúc **03:48 ngày 21/10/2026 UTC+7**. |
+| Bằng chứng gửi | Sau hai thông báo: attempts=2, completed=2, failures=0; kết luận thực nhận dựa thêm xác nhận người dùng, không chỉ counter. |
+| Dọn thử nghiệm | PASS: bỏ đường dẫn rule thử, reload Prometheus bằng SIGHUP, xóa file thử; giữ nguyên bốn rule chính thức. Không restart dịch vụ khi thử/dọn. |
+| Không ảnh hưởng dịch vụ | PASS: website/MySQL/Grafana/Loki/Alloy hoạt động; 14 container, chỉ Prometheus được recreate để thêm mount ở bước triển khai đầu, chỉ Alertmanager được recreate khi đổi mount Gmail. |
+| Offline Alerting | PASS: promtool config/rules, amtool config; 8 tình huống / 15 assertions. |
+
+Test ID: `BG-GMAIL-20261020T204136Z` (UTC). Không lưu email nguyên văn, ảnh,
+địa chỉ cá nhân hoặc credential vào hồ sơ Git. Có xác nhận người dùng về hai email;
+không truy cập hộp thư hoặc tạo ảnh minh chứng tự động.
+
+Phạm vi commit Alerting riêng (7 file):
+
+- `compose.yaml`
+- `config/prometheus/prometheus.yml`
+- `config/prometheus/rules/beautyglow-alerts.yml`
+- `config/alertmanager/alertmanager.yml` (fallback không gửi, không phải config Gmail thật)
+- `config/alertmanager/README.md`
+- `scripts/verify-alerting.py`
+- `docs/PHASE5-ACCEPTANCE.md`
+
+Loại trừ `.env`, credential/file runtime bên ngoài repo, rule thử, checkpoint,
+spool, volume, `config/prometheus/prometheus.batch43.yml` và ảnh monitoring chưa
+rà soát. Commit/push chỉ danh sách trên lên nhánh hiện tại sau kiểm tra staged
+content, remote và upstream; không amend, force-push hoặc reset.
+
+Vận hành, bảo vệ credential và rollback xem
+[`config/alertmanager/README.md`](../config/alertmanager/README.md).
+Chưa kết luận production 24/7: Bridge chưa chạy nền; cleanup spool/backup restore
+thật, giám sát đĩa, cảnh báo metric bị thiếu và Hardening vẫn là công việc tiếp
+theo. Hệ thống chạy trong WSL chỉ gửi cảnh báo khi host và các service hoạt động;
+không có hệ thống giám sát bên ngoài khi cả máy tắt. Gmail App Password có thể
+bị thu hồi; cần kiểm tra lại sau khi đổi credential, mạng hoặc receiver.
+
+## Hồ sơ nghiệm thu Logging trước đây (lịch sử)
+
 Ngày kiểm tra: 20/10/2026 (UTC+7). Nhánh hiện tại: `main`, HEAD `e165a50`.
 Không commit/push, không chạy live/restart trong lượt nghiệm thu này.
 

@@ -5,6 +5,16 @@ global:
   external_labels:
     project: beautyglow-website
 
+# Active alerting: rules are mounted read-only; credentials stay outside Git.
+rule_files:
+  - /etc/prometheus/rules/beautyglow-alerts.yml
+
+alerting:
+  alertmanagers:
+    - api_version: v2
+      static_configs:
+        - targets: ['alertmanager:9093']
+
 scrape_configs:
   - job_name: prometheus
     static_configs:
