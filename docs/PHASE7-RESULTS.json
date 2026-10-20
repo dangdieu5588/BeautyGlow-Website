@@ -1,0 +1,172 @@
+{
+  "checked_at_utc": "2026-10-20T21:22:42.458136+00:00",
+  "website_http_smoke": "PASS",
+  "website_checks": 20,
+  "product_detail_pages": 10,
+  "category_counts": [
+    6,
+    3,
+    1
+  ],
+  "search_with_result_and_no_result": "PASS",
+  "about_and_contact": "PASS",
+  "contact_scope": "GitHub Issues link; no submitted form",
+  "compose": "PASS",
+  "containers": {
+    "blackbox-exporter": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T21:08:22.699440561Z",
+      "restart_policy": "unless-stopped"
+    },
+    "alertmanager": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T20:40:35.50453646Z",
+      "restart_policy": "unless-stopped"
+    },
+    "prometheus": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T20:18:22.724706479Z",
+      "restart_policy": "unless-stopped"
+    },
+    "alloy": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.752223813Z",
+      "restart_policy": "unless-stopped"
+    },
+    "loki": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.733638514Z",
+      "restart_policy": "unless-stopped"
+    },
+    "grafana": {
+      "status": "running",
+      "health": "healthy",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.796402208Z",
+      "restart_policy": "unless-stopped"
+    },
+    "mysqld-exporter": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.620338006Z",
+      "restart_policy": "unless-stopped"
+    },
+    "nginx-exporter": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.64971998Z",
+      "restart_policy": "unless-stopped"
+    },
+    "cadvisor": {
+      "status": "running",
+      "health": "healthy",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.670254871Z",
+      "restart_policy": "unless-stopped"
+    },
+    "node-exporter": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.575920704Z",
+      "restart_policy": "unless-stopped"
+    },
+    "wordpress": {
+      "status": "running",
+      "health": "healthy",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.848605483Z",
+      "restart_policy": "unless-stopped"
+    },
+    "phpmyadmin": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.789401227Z",
+      "restart_policy": "unless-stopped"
+    },
+    "nginx": {
+      "status": "running",
+      "health": "not-configured",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.781541046Z",
+      "restart_policy": "unless-stopped"
+    },
+    "mysql": {
+      "status": "running",
+      "health": "healthy",
+      "restart_count": 0,
+      "started_at": "2026-10-20T19:25:30.850993123Z",
+      "restart_policy": "unless-stopped"
+    }
+  },
+  "production_volume_count": 7,
+  "production_volumes": [
+    "beautyglow-logging-alloy-data",
+    "beautyglow-logging-loki-data",
+    "beautyglow-website_alertmanager_data",
+    "beautyglow-website_grafana_data",
+    "beautyglow-website_mysql_data",
+    "beautyglow-website_prometheus_data",
+    "beautyglow-website_wordpress_data"
+  ],
+  "targets_up": 6,
+  "official_rules": [
+    {
+      "name": "BeautyGlowTargetDown",
+      "health": "ok",
+      "state": "inactive"
+    },
+    {
+      "name": "BeautyGlowMySQLDown",
+      "health": "ok",
+      "state": "inactive"
+    },
+    {
+      "name": "BeautyGlowNginxDown",
+      "health": "ok",
+      "state": "inactive"
+    },
+    {
+      "name": "BeautyGlowHTTPProbeFailed",
+      "health": "ok",
+      "state": "inactive"
+    }
+  ],
+  "alertmanager_config_valid": true,
+  "email_test_repeated": false,
+  "restart_test_performed": false,
+  "restart_evidence": "Existing restart policies, persistent volumes and prior startup/deployment evidence; no new whole-stack restart test",
+  "phase6_evidence_reused": "docs/PHASE6-RESULTS.json",
+  "phase5_evidence_reused": "docs/PHASE5-ACCEPTANCE.md",
+  "grafana_dashboards": {
+    "beautyglow-overview": {
+      "available": true,
+      "data_panel_count": 18,
+      "queries_match_repository": true
+    },
+    "beautyglow-logs-security": {
+      "available": true,
+      "data_panel_count": 14,
+      "queries_match_repository": true
+    }
+  },
+  "datasource_health": {
+    "prometheus": "OK",
+    "loki": "OK"
+  },
+  "gmail_starttls_send_resolved_valid": true,
+  "gmail_secret_metadata_valid": true
+}
